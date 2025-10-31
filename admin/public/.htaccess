@@ -1,0 +1,11 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Agar request kisi existing file ya folder ke liye hai to wahi serve kare
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Baaki sabko React/Vite ka index.html serve kare
+RewriteRule . /index.html [L]
