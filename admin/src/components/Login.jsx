@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react"; // Fixed: drop unused default React import per eslint.
 import { toast } from "react-toastify";
 import { api } from "../lib/api";
+import { simplePropTypes } from "../lib/simplePropTypes";
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -48,3 +49,8 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+
+Login.propTypes = {
+  setToken: simplePropTypes.func.isRequired, // Fixed: add runtime prop validation to satisfy react/prop-types.
+};
+

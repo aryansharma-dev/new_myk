@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react'; // Fixed: remove unused default React import and add useCallback for hooks lint.
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../lib/api';
@@ -9,23 +9,16 @@ const SubAdminProducts = () => {
   const [myProducts, setMyProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  // Fixed: removed unused selectedProduct state that eslint flagged.
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchMyProducts();
-  }, []);
-
-  const fetchMyProducts = async () => {
+  const fetchMyProducts = useCallback(async () => {
     try {
       const token = localStorage.getItem('subadmin_token');
-      console.log('[SubAdminProducts] Token exists:', !!token);
       const response = await api.get('/api/subadmin/mystore/products', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      console.log('[SubAdminProducts] API Response:', response?.data);
       const productsFromResponse = response?.data?.products || response?.data?.data?.products || response?.data?.data || [];
       if (response?.data?.success) {
         setMyProducts(Array.isArray(productsFromResponse) ? productsFromResponse : []);
@@ -45,7 +38,13 @@ const SubAdminProducts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: memoize fetchMyProducts so effect dependency is satisfied without lint errors.
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchMyProducts();
+    // Fixed: declare dependency on fetchMyProducts per react-hooks exhaustive deps rule.
+  }, [fetchMyProducts]);
 
   const addProductToStore = async (productId) => {
     try {
@@ -84,7 +83,6 @@ const SubAdminProducts = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      console.log('[SubAdminProducts] delete response:', response?.data);
       if (response.data.success) {
         toast.success(response.data.message || 'Product removed from your store');
         fetchMyProducts();
@@ -294,3 +292,4 @@ const SubAdminProducts = () => {
 };
 
 export default SubAdminProducts;
+

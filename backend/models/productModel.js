@@ -36,8 +36,7 @@ productSchema.pre("validate", async function (next) {
   next();
 });
 
-// (optional) helpful index
-productSchema.index({ slug: 1 }, { unique: true, sparse: true });
+// Fixed: removed duplicate slug index to silence Mongoose warning.
 
 // ⚠️ Model name exactly "Product" rakho
 const Product = mongoose.models.Product || mongoose.model("Product", productSchema);

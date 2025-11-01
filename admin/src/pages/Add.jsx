@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // Fixed: remove unused default React import flagged by lint.
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
 import { api } from "../lib/api";
 
-const Add = ({ token }) => {
+const Add = () => {
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [image3, setImage3] = useState(null);
@@ -17,7 +17,10 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
 
-  useEffect(() => { if (category === "Jewellery") setSizes([]); }, [category]);
+  useEffect(() => {
+    if (category === "Jewellery") setSizes([]);
+    // Fixed: expand effect for clarity after lint-driven refactor.
+  }, [category]);
 
    const resetForm = () => {
     setName(""); setDescription(""); setPrice("");

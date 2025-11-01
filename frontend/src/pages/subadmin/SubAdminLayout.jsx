@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; // Fixed: drop unused React default import per lint warning.
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { Home, Settings, Package, ShoppingBag, TrendingUp, LogOut, Menu } from 'lucide-react';
 import { toast } from 'react-toastify';

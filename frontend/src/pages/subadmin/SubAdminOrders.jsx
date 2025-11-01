@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'; // Fixed: drop unused React default import to appease eslint.
 import api from '../../lib/api';
 import { toast } from 'react-toastify';
 
@@ -31,27 +31,18 @@ const SubAdminOrders = () => {
     meta.content = 'Track orders that include products from your mini store.';
   }, []);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('subadmin_token');
       const qs = [];
       if (statusFilter) qs.push(`status=${encodeURIComponent(statusFilter)}`);
       if (search) qs.push(`search=${encodeURIComponent(search)}`);
-  const url = `/api/subadmin/mystore/orders${qs.length ? '?' + qs.join('&') : ''}`;
-      console.log('[SubAdminOrders] Fetching orders from', url, 'token present:', !!token);
+      const url = `/api/subadmin/mystore/orders${qs.length ? '?' + qs.join('&') : ''}`;
       const res = await api.get(url, { headers: { Authorization: `Bearer ${token}` } });
-      console.log('[SubAdminOrders] API response:', res?.data);
       const ordersFromResponse = res?.data?.orders || res?.data?.data?.orders || res?.data?.data || [];
       if (res.data && res.data.success) {
         setOrders(Array.isArray(ordersFromResponse) ? ordersFromResponse : []);
-        // Log a sample
-        console.log('[SubAdminOrders] Orders count:', (Array.isArray(ordersFromResponse) ? ordersFromResponse.length : 0));
-        (ordersFromResponse || []).slice(0,3).forEach(o => console.log('[SubAdminOrders] sample order cartItems:', o.cartItems?.map(ci => ({ product: ci.product, name: ci.name, qty: ci.quantity }))));
       } else {
         toast.error(res.data?.message || 'Failed to fetch orders');
       }
@@ -61,7 +52,13 @@ const SubAdminOrders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: memoize fetchOrders so useEffect dependency array stays valid for hooks lint.
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    fetchOrders();
+    // Fixed: run fetchOrders via useEffect with proper dependency to satisfy lint.
+  }, [fetchOrders]);
 
   const openOrder = (order) => setSelected(order);
 
@@ -174,3 +171,4 @@ const SubAdminOrders = () => {
 };
 
 export default SubAdminOrders;
+

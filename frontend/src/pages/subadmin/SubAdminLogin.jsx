@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; // Fixed: remove unused default React import flagged by lint.
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../lib/api';
@@ -136,7 +136,8 @@ const SubAdminLogin = () => {
           {/* Info Text */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              {/* Fixed: escape apostrophe to resolve react/no-unescaped-entities warning. */}
+              Don&apos;t have an account?{' '}
               <a href="/" className="text-blue-600 hover:underline">
                 Contact Admin
               </a>

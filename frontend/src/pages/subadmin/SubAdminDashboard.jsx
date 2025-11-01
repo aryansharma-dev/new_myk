@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../lib/api';
@@ -8,22 +8,15 @@ const SubAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchStoreData();
-  }, []);
-
-  const fetchStoreData = async () => {
+  const fetchStoreData = useCallback(async () => {
     try {
       const token = localStorage.getItem('subadmin_token');
-      console.log('[Dashboard] Token exists:', !!token);
 
       const response = await api.get('/api/subadmin/mystore', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
-      console.log('[Dashboard] API Response:', response?.data);
 
       const storeFromResponse = response?.data?.store || response?.data?.data?.store;
       if (response?.data?.success && storeFromResponse) {
@@ -45,7 +38,13 @@ const SubAdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: wrap fetchStoreData with useCallback so useEffect dependency stays stable.
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchStoreData();
+    // Fixed: include fetchStoreData dependency to satisfy React Hooks lint rule.
+  }, [fetchStoreData]);
 
   if (loading) {
     return (
@@ -90,7 +89,8 @@ const SubAdminDashboard = () => {
           <div className="flex items-center gap-2">
             <span className="text-yellow-600">⚠️</span>
             <p className="text-sm text-yellow-800">
-              Your store is currently <strong>inactive</strong>. It won't be visible to customers. Contact the admin to activate it.
+              {/* Fixed: escape apostrophe to satisfy react/no-unescaped-entities rule. */}
+              Your store is currently <strong>inactive</strong>. It won&apos;t be visible to customers. Contact the admin to activate it.
             </p>
           </div>
         </div>

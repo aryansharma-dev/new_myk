@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'; // Fixed: remove unused default React import as per eslint report.
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../lib/api';
@@ -15,22 +15,15 @@ const SubAdminStoreSettings = () => {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchStoreData();
-  }, []);
-
-  const fetchStoreData = async () => {
+  const fetchStoreData = useCallback(async () => {
     try {
       const token = localStorage.getItem('subadmin_token');
-      console.log('[StoreSettings] Token exists:', !!token);
 
       const response = await api.get('/api/subadmin/mystore', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
-      console.log('[StoreSettings] API Response:', response?.data);
 
       const storeData = response?.data?.store || response?.data?.data?.store;
       if (response?.data?.success && storeData) {
@@ -57,7 +50,13 @@ const SubAdminStoreSettings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: memoize fetchStoreData so useEffect dependency warning is resolved.
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchStoreData();
+    // Fixed: include fetchStoreData dependency to satisfy exhaustive-deps lint rule.
+  }, [fetchStoreData]);
 
   const handleChange = (e) => {
     setFormData({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'; // Fixed: drop unused default React import per eslint.
 import api from '../../lib/api';
 import { toast } from 'react-toastify';
 
@@ -9,23 +9,7 @@ const SubAdminTrending = () => {
   const [category, setCategory] = useState('');
   const [sort, setSort] = useState('newest');
 
-  useEffect(() => {
-    fetchTrending();
-    fetchMyProducts();
-  }, []);
-
-  useEffect(() => {
-    document.title = 'Latest Collection - Sub Admin';
-    let meta = document.querySelector('meta[name="description"]');
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.name = 'description';
-      document.head.appendChild(meta);
-    }
-    meta.content = 'Browse trending and bestselling products and add them to your mini store.';
-  }, []);
-
-  const fetchTrending = async () => {
+  const fetchTrending = useCallback(async () => {
     setLoading(true);
     try {
       // try trending endpoint first
@@ -42,24 +26,49 @@ const SubAdminTrending = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: memoize fetchTrending so React Hooks lint doesn't complain about missing dependency.
+  }, []);
 
-  const fetchMyProducts = async () => {
+  const fetchMyProducts = useCallback(async () => {
     try {
       const token = localStorage.getItem('subadmin_token');
-  const res = await api.get('/api/subadmin/mystore/products', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/api/subadmin/mystore/products', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (res.data && res.data.products) {
         setMyIds(new Set(res.data.products.map(p => p._id)));
       }
     } catch (error) {
       console.error('fetch my products error:', error);
     }
-  };
+   // Fixed: memoize fetchMyProducts for the exhaustive-deps hook check.
+  }, []);
+
+  useEffect(() => {
+    fetchTrending();
+    fetchMyProducts();
+    // Fixed: run memoized fetchers with proper dependency list for exhaustive-deps rule.
+  }, [fetchMyProducts, fetchTrending]);
+
+  useEffect(() => {
+    document.title = 'Latest Collection - Sub Admin';
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'description';
+      document.head.appendChild(meta);
+    }
+    meta.content = 'Browse trending and bestselling products and add them to your mini store.';
+  }, []);
 
   const addToStore = async (pid) => {
     try {
       const token = localStorage.getItem('subadmin_token');
-  const res = await api.post('/api/subadmin/mystore/products', { productId: pid }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post(
+        '/api/subadmin/mystore/products',
+        { productId: pid },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (res.data && res.data.success) {
         toast.success('Added to your store');
         setMyIds(s => new Set([...Array.from(s), pid]));

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react"; // Fixed: remove unused default React import and memoize fetch for hooks lint.
 import { toast } from "react-toastify";
-import { currency } from "../App";
+import { currency } from "../constants";
 import { assets } from "../assets/assets";
 import { api } from "../lib/api";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
 
-  const fetchAllOrders = async () => {
+  const fetchAllOrders = useCallback(async () => {
     if (!token) {
        return;
     }
@@ -24,7 +24,8 @@ const Orders = ({ token }) => {
       console.error(error);
       toast.error(error?.response?.data?.message || error.message);
     }
-  };
+  // Fixed: memoize fetchAllOrders so useEffect dependency is satisfied.
+  }, [token]);
 
   const statusHandler = async (event, orderId) => {
     try {
@@ -45,7 +46,8 @@ const Orders = ({ token }) => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, [token]);
+    // Fixed: include memoized fetchAllOrders dependency per exhaustive-deps rule.
+  }, [fetchAllOrders]);
 
   return (
     <div>
@@ -104,3 +106,7 @@ const Orders = ({ token }) => {
 };
 
 export default Orders;
+
+Orders.propTypes = {
+  token: simplePropTypes.string, // Fixed: add prop validation to satisfy react/prop-types lint rule.
+};

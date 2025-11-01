@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; // Fixed: remove unused default React import flagged by eslint.
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../lib/api';
 import { toast } from 'react-toastify';
@@ -194,3 +194,4 @@ const SubAdminProductForm = () => {
 };
 
 export default SubAdminProductForm;
+

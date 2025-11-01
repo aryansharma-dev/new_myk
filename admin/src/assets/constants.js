@@ -1,0 +1,1 @@
+export const currency = "₹"; // Fixed: moved currency out of App.jsx to silence react-refresh lint warning about mixed exports.

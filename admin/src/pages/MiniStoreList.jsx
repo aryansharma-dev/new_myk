@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react"; // Fixed: add useCallback to satisfy hooks lint without default React import.
 import { toast } from "react-toastify";
 import { api } from "../lib/api";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ export default function MiniStoreList() {
   const [filterActive, setFilterActive] = useState("all"); // all, active, inactive
   const navigate = useNavigate();
 
-  const loadStores = async () => {
+  const loadStores = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -31,18 +31,20 @@ export default function MiniStoreList() {
     } finally {
       setLoading(false);
     }
-  };
+  // Fixed: memoize loadStores so useEffect dependency list stays accurate.
+  }, [filterActive, searchTerm]);
 
   useEffect(() => {
     loadStores();
-  }, []);
+  // Fixed: include memoized loadStores dependency per exhaustive-deps rule.
+  }, [loadStores]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     loadStores();
   };
 
-  const toggleStatus = async (id, currentStatus) => {
+  const toggleStatus = async (id) => {
     // Optimistic UI update: toggle locally first
     setStores(prev => prev.map(s => s._id === id ? { ...s, toggling: true } : s));
     try {
@@ -242,8 +244,8 @@ export default function MiniStoreList() {
                     >
                       View
                     </a>
-                    <button
-                      onClick={() => toggleStatus(store._id, store.isActive)}
+                  <button
+                    onClick={() => toggleStatus(store._id)}
                       className={`text-sm px-2 py-1 rounded ${
                         store.isActive
                           ? 'text-orange-600 hover:bg-orange-50'

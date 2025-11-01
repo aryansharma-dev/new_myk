@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react"; // Fixed: remove unused default React import and memoize fetch for hooks lint.
 import { toast } from "react-toastify";
-import { currency } from "../App";
+import { currency } from "../constants";
 import { api } from "../lib/api";
+import { simplePropTypes } from "../lib/simplePropTypes";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
 
-  const fetchList = async () => {
+  const fetchList = useCallback(async () => {
     try {
       const data = await api("/product/list");
       if (data.success) {
@@ -19,11 +20,12 @@ const List = ({ token }) => {
       console.error(error);
       toast.error(error?.response?.data?.message || error.message);
     }
-  };
+    // Fixed: memoize fetchList so useEffect can safely include it as a dependency.
+  }, []);
 
   const removeProduct = async (id) => {
     try {
-       const data = await api("/product/remove", {
+      const data = await api("/product/remove", {
         method: "POST",
         body: { id },
       });
@@ -31,19 +33,20 @@ const List = ({ token }) => {
         toast.success(data.message || "Product removed");
         await fetchList();
       } else {
-         toast.error(data.message || "Failed to remove product");
+        toast.error(data.message || "Failed to remove product");
       }
     } catch (error) {
-       console.error(error);
-       toast.error(error?.response?.data?.message || error.message);
+      console.error(error);
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
   useEffect(() => {
-if (token) {
+    if (token) {
       fetchList();
     }
-  }, [token]);
+  // Fixed: include fetchList dependency to satisfy exhaustive-deps rule.
+  }, [fetchList, token]);
 
   return (
     <>
@@ -100,3 +103,7 @@ if (token) {
 };
 
 export default List;
+
+List.propTypes = {
+  token: simplePropTypes.string, // Fixed: add prop validation to satisfy react/prop-types lint rule.
+};
