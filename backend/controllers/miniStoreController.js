@@ -83,8 +83,7 @@ export const createMiniStore = async (req, res) => {
             success: true,
             message: "Mini store and sub-admin created successfully",
             displayName: trimmedDisplayName,
-            store: savedStore,
-            c// TODO: deliver initial credentials via a secure channel (email/SMS) or force reset on first login.
+            store: savedStore
         });
 
     } catch (error) {

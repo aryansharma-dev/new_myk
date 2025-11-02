@@ -12,13 +12,13 @@ const userSchema = new mongoose.Schema({
         enum: ['customer', 'subadmin', 'admin'], 
         default: 'customer' 
     },
-    miniStoreId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'ministore',  // ✅ lowercase - matches miniStoreModel export
+    miniStoreId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MiniStore',
         default: null 
     }
-}, { minimize: false })
+}, { minimize: false });
 
-const userModel = mongoose.models.User || mongoose.model('User',userSchema);
+const userModel = mongoose.models.User || mongoose.model('User', userSchema);
 
-export default userModel
+export default userModel;
