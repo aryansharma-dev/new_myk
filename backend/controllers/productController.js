@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 import { normalizeProductImages, toImageArray } from "../utils/productImages.js";
+import { toBool } from "../utils/boolean.js"; // Shared helper to parse bestseller flags consistently
 
 const uploadBuffers = async (files = []) => {
   if (!files.length) return [];
@@ -55,7 +56,7 @@ const addProduct = async (req, res) => {
     const { name, description, price, category, subCategory, bestseller } = req.body;
 
     const priceNumber = Number(price);
-    const bestsellerBool = parseBoolean(bestseller);
+    const bestsellerBool = toBool(bestseller); // Ensure "false"/"0" stay false for bestseller flag
 
     let sizes = parseSizes(req.body?.sizes || req.body?.size || []);
     const categoryLower = String(category || "").trim().toLowerCase();

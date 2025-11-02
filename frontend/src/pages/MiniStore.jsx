@@ -166,7 +166,8 @@ export default function MiniStore({ limit = 8 }) {
 
     (async () => {
       try {
-        const { data } = await api.get(`/api/ministores/${normalisedSlug}`, {
+         // Namespace slug fetch to avoid admin route shadowing in Express.
+        const { data } = await api.get(`/api/ministores/store/${normalisedSlug}`, {
           params: { productLimit: 24 },
         })
         if (!cancelled) {

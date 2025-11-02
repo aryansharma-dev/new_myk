@@ -4,6 +4,7 @@ import productModel from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import orderModel from "../models/orderModel.js";
+import { toBool } from "../utils/boolean.js"; // Shared boolean normalizer for bestseller flag parsing
 
 /**
  * Sub-Admin Login
@@ -13,8 +14,10 @@ import orderModel from "../models/orderModel.js";
 export const subAdminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        const normalizedEmail = String(email || "").trim().toLowerCase(); // Normalize email casing/whitespace before lookup
+        const passwordValue = String(password || "");
 
-        if (!email || !password) {
+        if (!normalizedEmail || !passwordValue) {
             return res.status(400).json({
                 success: false,
                 message: "Email and password are required"
@@ -22,7 +25,7 @@ export const subAdminLogin = async (req, res) => {
         }
 
         // Find user
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email: normalizedEmail });
 
         if (!user) {
             return res.status(401).json({
@@ -40,7 +43,7 @@ export const subAdminLogin = async (req, res) => {
         }
 
         // Verify password
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(passwordValue, user.password); // Compare using sanitized password input
 
         if (!isMatch) {
             return res.status(401).json({
@@ -240,8 +243,10 @@ export const addProductToStore = async (req, res) => {
             });
         }
 
-        // Check if product already added
-        if (store.products.includes(productId)) {
+        const pid = String(productId); // Normalise product id for ObjectId comparison
+
+        // Check if product already added using string comparison to catch ObjectId duplicates
+        if (store.products?.some(id => id?.toString() === pid)) {
             return res.status(400).json({
                 success: false,
                 message: "Product already added to store"
@@ -249,7 +254,7 @@ export const addProductToStore = async (req, res) => {
         }
 
         // Add product to store
-        store.products.push(productId);
+        store.products.push(productId); // Safe to push after duplicate guard above
         await store.save();
 
         res.json({
@@ -350,6 +355,8 @@ export const createNewProduct = async (req, res) => {
 
         const now = Date.now();
 
+        const bestsellerFlag = toBool(bestseller); // Parse bestseller using consistent helper
+
         const newProduct = await productModel.create({
             name: String(name).trim(),
             description: String(description).trim(),
@@ -359,7 +366,7 @@ export const createNewProduct = async (req, res) => {
             sizes: sizesArr.length ? sizesArr : [],
             images: imagesArr,
             stock: Number(stock) || 0,
-            bestseller: Boolean(bestseller),
+            bestseller: bestsellerFlag,
             date: now
         });
 
@@ -474,7 +481,9 @@ export const updateMyProduct = async (req, res) => {
         const allowed = ['name','description','price','images','category','subCategory','sizes','stock','bestseller','isActive'];
         for (const key of Object.keys(updates)) {
             if (allowed.includes(key)) {
-                product[key] = updates[key];
+                product[key] = key === 'bestseller'
+                    ? toBool(updates[key]) // Normalise bestseller updates via shared helper
+                    : updates[key];
             }
         }
 

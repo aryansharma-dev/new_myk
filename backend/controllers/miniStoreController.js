@@ -13,28 +13,22 @@ import jwt from "jsonwebtoken";
 export const createMiniStore = async (req, res) => {
     try {
         const { displayName, slug, bio, email, password } = req.body;
+        
+        const trimmedDisplayName = String(displayName || "").trim();
+        const slugValue = String(slug || "").trim().toLowerCase();
+        const normalizedEmail = String(email || "").trim().toLowerCase(); // Normalize email casing/whitespace before queries
+        const passwordValue = String(password || "");
 
         // Validation
-        if (!displayName || !email || !password || !slug) {
+        if (!trimmedDisplayName || !normalizedEmail || !passwordValue || !slugValue) {
             return res.status(400).json({
                 success: false,
                 message: "Display name, slug, email and password are required"
             });
         }
 
-        // ✅ FIX: Handle slug properly with trim
-        const slugValue = slug.trim().toLowerCase();
-
-        // Validate slug is not empty after trim
-        if (!slugValue) {
-            return res.status(400).json({
-                success: false,
-                message: "Slug cannot be empty"
-            });
-        }
-
         // Check if slug already exists
-        const existingStore = await miniStoreModel.findOne({ 
+        const existingStore = await miniStoreModel.findOne({
             slug: slugValue 
         });
         if (existingStore) {
@@ -45,7 +39,7 @@ export const createMiniStore = async (req, res) => {
         }
 
         // Check if email already exists
-        const existingUser = await userModel.findOne({ email });
+        const existingUser = await userModel.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -54,12 +48,12 @@ export const createMiniStore = async (req, res) => {
         }
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(passwordValue, 10);
 
         // Create sub-admin user
         const newUser = new userModel({
-            name: displayName,
-            email: email,
+            name: trimmedDisplayName,
+            email: normalizedEmail,
             password: hashedPassword,
             role: "subadmin",
             cartData: {}
@@ -71,7 +65,7 @@ export const createMiniStore = async (req, res) => {
         const newStore = new miniStoreModel({
             userId: savedUser._id,
             slug: slugValue,
-            displayName: displayName.trim(),
+            displayName: trimmedDisplayName,
             bio: bio || "",
             avatarUrl: "",
             bannerUrl: "",
@@ -88,11 +82,9 @@ export const createMiniStore = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "Mini store and sub-admin created successfully",
+            displayName: trimmedDisplayName,
             store: savedStore,
-            credentials: {
-                email: email,
-                password: password // Send password once (only in response)
-            }
+            c// TODO: deliver initial credentials via a secure channel (email/SMS) or force reset on first login.
         });
 
     } catch (error) {

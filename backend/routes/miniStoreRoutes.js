@@ -77,9 +77,9 @@ router.get("/", async (req, res) => {
 
 /**
  * Get Mini Store by Slug (Public)
- * GET /api/ministores/:slug
+ * GET /api/ministores/store/:slug
  */
-router.get("/:slug", async (req, res) => {
+router.get("/store/:slug", async (req, res) => {
     try {
         const slugParam = String(req.params.slug || "").trim().toLowerCase();
         
@@ -118,7 +118,7 @@ router.get("/:slug", async (req, res) => {
         const products = (storeDoc.products || []).map(normalizeProductImages);
         
         res.json({ ...storeDoc, products });
-        
+
     } catch (err) {
         console.error("[Get store by slug error]:", err);
         res.status(500).json({ message: err.message });
@@ -128,6 +128,9 @@ router.get("/:slug", async (req, res) => {
 // ============================================
 // AUTH ROUTES
 // ============================================
+
+// NOTE: Express matches routes in registration order; namespacing the slug
+// route above keeps /admin and /subadmin handlers from being shadowed
 
 /**
  * Sub-Admin Login
