@@ -1,6 +1,8 @@
 import express from "express";
 import miniStoreModel from "../models/miniStoreModel.js";
+import userModel from "../models/userModel.js";
 import { normalizeProductImages } from "../utils/productImages.js";
+import bcrypt from "bcryptjs";
 
 // Controllers
 import {
@@ -241,18 +243,25 @@ router.delete("/subadmin/mystore/products/:productId", isSubAdmin, removeProduct
  */
 router.post("/", async (req, res) => {
     try {
-        let { slug, displayName } = req.body;
+        let { slug, displayName, email, password } = req.body;
         
         if (!displayName) {
             return res.status(400).json({ message: "displayName required" });
         }
-        
+
         displayName = String(displayName).trim();
-        
+
+        const normalizedEmail = String(email || "").trim().toLowerCase();
+        const passwordValue = String(password || "");
+
         if (!displayName) {
             return res.status(400).json({ message: "displayName required" });
         }
-        
+
+        if (!normalizedEmail || !passwordValue) {
+            return res.status(400).json({ message: "email and password required" });
+        }
+
         const providedSlug = typeof slug === "string" ? slug : "";
         let clean = slugify(providedSlug.trim());
         
@@ -270,9 +279,46 @@ router.post("/", async (req, res) => {
         while (await miniStoreModel.findOne({ slug: uniqueSlug })) {
             uniqueSlug = `${clean}-${suffix++}`;
         }
-        
-        const payload = { ...req.body, slug: uniqueSlug, displayName };
-        const store = await miniStoreModel.create(payload);
+
+        // Check for existing sub-admin email
+        const existingUser = await userModel.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already registered" });
+        }
+
+        const hashedPassword = await bcrypt.hash(passwordValue, 10);
+
+        const newUser = new userModel({
+            name: displayName,
+            email: normalizedEmail,
+            password: hashedPassword,
+            role: "subadmin",
+            cartData: {}
+        });
+
+        const savedUser = await newUser.save();
+
+        const payload = {
+            ...req.body,
+            slug: uniqueSlug,
+            displayName,
+            userId: savedUser._id
+        };
+
+        delete payload.password;
+        delete payload.email;
+
+        const storeDoc = await miniStoreModel.create(payload);
+
+        savedUser.miniStoreId = storeDoc._id;
+        await savedUser.save();
+
+        const store = storeDoc.toObject ? storeDoc.toObject() : storeDoc;
+        store.subAdmin = {
+            id: savedUser._id,
+            name: savedUser.name,
+            email: savedUser.email
+        };
         
         res.status(201).json(store);
         

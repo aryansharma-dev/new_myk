@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import orderModel from "../models/orderModel.js";
 import { toBool } from "../utils/boolean.js"; // Shared boolean normalizer for bestseller flag parsing
+import { normalizeProductImages } from "../utils/productImages.js";
 
 /**
  * Sub-Admin Login
@@ -115,7 +116,7 @@ export const getMyStore = async (req, res) => {
 
         const store = await miniStoreModel
             .findById(req.user.miniStoreId)
-            .populate('products', 'name price image category sizes bestseller');
+            .populate('products', 'name price images image category sizes bestseller');
 
         console.log('[getMyStore] Store found:', store ? { id: store._id, displayName: store.displayName, productsCount: (store.products || []).length } : null);
 
@@ -123,8 +124,15 @@ export const getMyStore = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Store not found' });
         }
 
+        const storePayload = (() => {
+            if (!store) return store;
+            const plain = typeof store.toObject === "function" ? store.toObject() : { ...store };
+            const products = (plain.products || []).map(normalizeProductImages);
+            return { ...plain, products };
+        })();
+
         // Return both top-level `store` and nested `data.store` for backward compatibility
-        return res.json({ success: true, message: 'Store fetched', store, data: { store } });
+        return res.json({ success: true, message: 'Store fetched', store: storePayload, data: { store: storePayload } });
 
     } catch (error) {
         console.error("[getMyStore error]:", error);
@@ -195,9 +203,11 @@ export const getMyProducts = async (req, res) => {
                 message: "Store not found"
             });
         }
+       
+        const products = (store.products || []).map(normalizeProductImages);
 
         // Return top-level products too for frontend compatibility
-        return res.json({ success: true, message: 'Products fetched', products: store.products || [], data: { products: store.products || [] } });
+        return res.json({ success: true, message: 'Products fetched', products, data: { products } });
 
     } catch (error) {
         console.error("[getMyProducts error]:", error);
@@ -380,7 +390,16 @@ export const createNewProduct = async (req, res) => {
         store.products.push(newProduct._id);
         await store.save();
 
-    res.status(201).json({ success: true, message: "Product created and added to store", data: { product: newProduct, store } });
+        const payloadProduct = normalizeProductImages(newProduct);
+        const payloadStore = typeof store.toObject === "function" ? store.toObject() : store;
+
+        res.status(201).json({
+            success: true,
+            message: "Product created and added to store",
+            data: { product: payloadProduct, store: payloadStore },
+            product: payloadProduct,
+            store: payloadStore
+        });
 
     } catch (error) {
         console.error("[createNewProduct error]:", error);
@@ -488,8 +507,9 @@ export const updateMyProduct = async (req, res) => {
         }
 
         await product.save();
+        const payloadProduct = normalizeProductImages(product);
         console.log('[updateMyProduct] Product updated:', productId, 'by subadmin:', req.user.id);
-        return res.json({ success: true, message: 'Product updated', product });
+        return res.json({ success: true, message: 'Product updated', product: payloadProduct, data: { product: payloadProduct } });
     } catch (error) {
         console.error('[updateMyProduct] Error:', error);
         return res.status(500).json({ success: false, message: error.message });

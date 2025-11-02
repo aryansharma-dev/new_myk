@@ -4,8 +4,14 @@ import { api } from "../lib/api";
 
 export default function MiniStoreAdd() {
   const [form, setForm] = useState({
-    slug: "", displayName: "", bio: "",
-    avatarUrl: "", bannerUrl: "", productsCsv: ""
+    slug: "",
+    displayName: "",
+    bio: "",
+    avatarUrl: "",
+    bannerUrl: "",
+    email: "",
+    password: "",
+    productsCsv: ""
   });
   const [saving, setSaving] = useState(false);
 
@@ -25,16 +31,27 @@ export default function MiniStoreAdd() {
         bio: form.bio,
         avatarUrl: form.avatarUrl,
         bannerUrl: form.bannerUrl,
+        email: form.email,
+        password: form.password,
       };
       if (form.productsCsv.trim()) {
         payload.products = form.productsCsv.split(",").map(s => s.trim()).filter(Boolean);
       }
-            const data = await api("/ministores", { method: "POST", body: payload });
+      const data = await api("/ministores", { method: "POST", body: payload });
       toast.success("Mini store created");
-      setForm({ slug:"", displayName:"", bio:"", avatarUrl:"", bannerUrl:"", productsCsv:"" });
+      setForm({
+        slug: "",
+        displayName: "",
+        bio: "",
+        avatarUrl: "",
+        bannerUrl: "",
+        email: "",
+        password: "",
+        productsCsv: ""
+      });
       return data;
     } catch (err) {
-          const message = err?.response?.data?.message || err.message;
+      const message = err?.response?.data?.message || err.message;
       toast.error(message);
     } finally { setSaving(false); }
   };
@@ -50,6 +67,29 @@ export default function MiniStoreAdd() {
         <label className="grid gap-1">
           <span className="text-sm">Display Name</span>
           <input name="displayName" value={form.displayName} onChange={onChange} className="border p-2 rounded" required />
+        </label>
+        <label className="grid gap-1">
+          <span className="text-sm">Sub-admin Email</span>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={onChange}
+            className="border p-2 rounded"
+            required
+          />
+        </label>
+        <label className="grid gap-1">
+          <span className="text-sm">Sub-admin Password</span>
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={onChange}
+            className="border p-2 rounded"
+            required
+            minLength={6}
+          />
         </label>
         <label className="grid gap-1">
           <span className="text-sm">Bio (optional)</span>

@@ -26,7 +26,8 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 // Guard required env vars early
-const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
+const wantsDatabase = process.env.SKIP_DB !== "true";
+const requiredEnvVars = ["JWT_SECRET", wantsDatabase ? "MONGODB_URI" : null].filter(Boolean);
 const missingEnvVars = requiredEnvVars.filter(
   (key) => !process.env[key] || process.env[key].toString().trim() === ""
 );
@@ -36,6 +37,10 @@ if (missingEnvVars.length) {
     `❌ Missing required environment variables: ${missingEnvVars.join(", ")}`
   );
   process.exit(1);
+}
+
+if (!wantsDatabase && (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim())) {
+  console.warn("⚠️  SKIP_DB=true: starting without MongoDB connection or MONGODB_URI");
 }
 
 // DB + Cloudinary
