@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react"; // Fixed: remove unused default React import and memoize fetch for hooks lint.
+import { useCallback, useEffect, useState } from "react"; // Fix: rely on hooks directly instead of default React import to satisfy lint.
 import { toast } from "react-toastify";
-import { currency } from "../constants";
+import { currency } from "../assets/constants"; // Fix: correct module path so Vite can resolve during build.
 import { api } from "../lib/api";
 import { simplePropTypes } from "../lib/simplePropTypes";
 
@@ -12,7 +12,7 @@ const List = ({ token }) => {
       const data = await api("/product/list");
       if (data.success) {
         const products = data?.data?.products || data.products || [];
-        setList(products.reverse());
+        setList(products.slice().reverse()); // Fix: reverse a cloned array to avoid mutating cached API results.
       } else {
         toast.error(data.message || "Failed to load products");
       }
@@ -20,7 +20,7 @@ const List = ({ token }) => {
       console.error(error);
       toast.error(error?.response?.data?.message || error.message);
     }
-    // Fixed: memoize fetchList so useEffect can safely include it as a dependency.
+    // Fix: memoize fetchList so useEffect can safely include it as a dependency.
   }, []);
 
   const removeProduct = async (id) => {
@@ -45,7 +45,7 @@ const List = ({ token }) => {
     if (token) {
       fetchList();
     }
-  // Fixed: include fetchList dependency to satisfy exhaustive-deps rule.
+    // Fix: include fetchList dependency to satisfy exhaustive-deps rule.
   }, [fetchList, token]);
 
   return (
@@ -105,5 +105,5 @@ const List = ({ token }) => {
 export default List;
 
 List.propTypes = {
-  token: simplePropTypes.string, // Fixed: add prop validation to satisfy react/prop-types lint rule.
+  token: simplePropTypes.string, // Fix: ensure prop validation is wired to the helper for lint compliance.
 };
