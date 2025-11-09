@@ -1,35 +1,11 @@
 import axios from "axios";
 
 const normalise = (value = "") => value.replace(/\/$/, "");
-const envBackendUrl = normalise(import.meta.env.VITE_BACKEND_URL || "");
-const localPort = import.meta.env.VITE_BACKEND_LOCAL_PORT || "4000";
-const localBackendUrl = normalise(`http://localhost:${localPort}`);
+const backendUrl = normalise(
+  import.meta.env.VITE_BACKEND_URL || "/api"
+);
 
-const shouldForceRemote =
-  (import.meta.env.VITE_FORCE_BACKEND_URL || "").toString().toLowerCase() === "true";
-
-const resolveBackendUrl = () => {
-  let resolved = envBackendUrl || localBackendUrl;
-
-  if (typeof window === "undefined") {
-    return resolved;
-  }
-
-  const hostname = window.location.hostname;
-  const isLocalhost =
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname === "[::1]" ||
-    hostname.endsWith(".local");
-
-  if (!shouldForceRemote && isLocalhost) {
-    resolved = localBackendUrl;
-  }
-
-  return resolved || localBackendUrl;
-};
-
-export const backendUrl = resolveBackendUrl();
+export { backendUrl };
 const api = axios.create({
   baseURL: backendUrl,
   withCredentials: true,

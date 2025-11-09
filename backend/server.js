@@ -54,13 +54,14 @@ app.set("trust proxy", 1);
 const staticAllowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:3000",  // Common dev port (from Folder 2)
+  "http://localhost:5175",  // Common dev port (from Folder 2)
   "http://localhost:4000",  // Common dev port (from Folder 1)
   "https://tinymillion.com",
   "https://www.tinymillion.com",
   "https://admin.tinymillion.com",
   "https://www.admin.tinymillion.com",
   "https://tinymillion.onrender.com",
+  "https://miniadmin.tinymillion.com",
 ];
 
 const envAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
