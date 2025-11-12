@@ -4,6 +4,7 @@ import productModel from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import orderModel from "../models/orderModel.js";
+import { v2 as cloudinary } from "cloudinary";
 import { toBool } from "../utils/boolean.js"; // Shared boolean normalizer for bestseller flag parsing
 import { normalizeProductImages } from "../utils/productImages.js";
 
@@ -328,6 +329,7 @@ export const removeProductFromStore = async (req, res) => {
  * Access: Sub-Admin Only
  *
  * Request body: { name, description, price, category, subCategory, sizes, images, stock, bestseller }
+ * Multipart files: image1, image2, image3, image4 (optional)
  * Response: { success, message, data: { product, store } }
  */
 export const createNewProduct = async (req, res) => {
@@ -352,20 +354,50 @@ export const createNewProduct = async (req, res) => {
         // Normalize sizes (accept array or comma-separated string)
         let sizesArr = [];
         if (Array.isArray(sizes)) sizesArr = sizes.map(s => String(s).trim()).filter(Boolean);
-        else if (typeof sizes === "string") sizesArr = sizes.split(",").map(s => String(s).trim()).filter(Boolean);
+        else if (typeof sizes === "string") {
+            try {
+                const parsed = JSON.parse(sizes);
+                if (Array.isArray(parsed)) sizesArr = parsed.map(s => String(s).trim()).filter(Boolean);
+            } catch (_) {
+                sizesArr = sizes.split(",").map(s => String(s).trim()).filter(Boolean);
+            }
+        }
 
-        // Normalize images (accept array or comma-separated string)
+        // Normalize images from request body (already uploaded URLs)
         let imagesArr = [];
         if (Array.isArray(images)) imagesArr = images.map(u => String(u).trim()).filter(Boolean);
         else if (typeof images === "string") imagesArr = images.split(",").map(u => String(u).trim()).filter(Boolean);
 
-        if (imagesArr.length === 0) {
-            return res.status(400).json({ success: false, message: "At least one image URL is required" });
+        // Upload files from multer (image1, image2, image3, image4)
+        const uploadedUrls = [];
+        for (let i = 1; i <= 4; i++) {
+            const file = req.files?.[`image${i}`]?.[0];
+            if (file) {
+                const uploadResult = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { resource_type: "image", folder: "products" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                if (uploadResult?.secure_url) {
+                    uploadedUrls.push(uploadResult.secure_url);
+                }
+            }
+        }
+
+        // Combine body images and uploaded images
+        const allImages = [...imagesArr, ...uploadedUrls].filter(Boolean);
+
+        if (allImages.length === 0) {
+            return res.status(400).json({ success: false, message: "At least one image is required" });
         }
 
         const now = Date.now();
-
-        const bestsellerFlag = toBool(bestseller); // Parse bestseller using consistent helper
+        const bestsellerFlag = toBool(bestseller);
 
         const newProduct = await productModel.create({
             name: String(name).trim(),
@@ -374,7 +406,7 @@ export const createNewProduct = async (req, res) => {
             category: String(category).trim(),
             subCategory: String(subCategory).trim(),
             sizes: sizesArr.length ? sizesArr : [],
-            images: imagesArr,
+            images: allImages,
             stock: Number(stock) || 0,
             bestseller: bestsellerFlag,
             date: now
@@ -496,6 +528,27 @@ export const updateMyProduct = async (req, res) => {
             return res.status(403).json({ success: false, message: 'Unauthorized - product not in your store' });
         }
 
+        // Handle file uploads
+        const uploadedUrls = [];
+        for (let i = 1; i <= 4; i++) {
+            const file = req.files?.[`image${i}`]?.[0];
+            if (file) {
+                const uploadResult = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { resource_type: "image", folder: "products" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                if (uploadResult?.secure_url) {
+                    uploadedUrls.push(uploadResult.secure_url);
+                }
+            }
+        }
+
         // Apply allowed updates only
         const allowed = ['name','description','price','images','category','subCategory','sizes','stock','bestseller','isActive'];
         for (const key of Object.keys(updates)) {
@@ -504,6 +557,11 @@ export const updateMyProduct = async (req, res) => {
                     ? toBool(updates[key]) // Normalise bestseller updates via shared helper
                     : updates[key];
             }
+        }
+
+        // If new files were uploaded, merge them with existing images
+        if (uploadedUrls.length > 0) {
+            product.images = [...(product.images || []), ...uploadedUrls];
         }
 
         await product.save();

@@ -14,6 +14,7 @@ import {
 } from "../controllers/subadminController.js";
 
 import { isSubAdmin } from "../middleware/roleMiddleware.js";
+import upload from "../middleware/multer.js";
 
 const router = express.Router();
 
@@ -30,8 +31,28 @@ router.get("/mystore", isSubAdmin, getMyStore);
 router.put("/mystore", isSubAdmin, updateMyStore);
 router.get("/mystore/products", isSubAdmin, getMyProducts);
 router.post("/mystore/products", isSubAdmin, addProductToStore);
-router.post("/mystore/products/create", isSubAdmin, createNewProduct);
-router.put('/mystore/products/:productId', isSubAdmin, updateMyProduct);
+router.post(
+  "/mystore/products/create",
+  isSubAdmin,
+  upload.fields([
+    { name: "image1", maxCount: 1 },
+    { name: "image2", maxCount: 1 },
+    { name: "image3", maxCount: 1 },
+    { name: "image4", maxCount: 1 },
+  ]),
+  createNewProduct
+);
+router.put(
+  '/mystore/products/:productId',
+  isSubAdmin,
+  upload.fields([
+    { name: "image1", maxCount: 1 },
+    { name: "image2", maxCount: 1 },
+    { name: "image3", maxCount: 1 },
+    { name: "image4", maxCount: 1 },
+  ]),
+  updateMyProduct
+);
 router.delete("/mystore/products/:productId", isSubAdmin, deleteMyProduct);
 router.get("/mystore/orders", isSubAdmin, getMyStoreOrders);
 
