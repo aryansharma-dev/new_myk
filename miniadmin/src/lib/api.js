@@ -1,9 +1,63 @@
 import axios from "axios";
 
 const normalise = (value = "") => value.replace(/\/$/, "");
-const backendUrl = normalise(
-  import.meta.env.VITE_BACKEND_URL || "/api"
-);
+const envBackendUrl = normalise(import.meta.env.VITE_BACKEND_URL || "");
+const localPort = import.meta.env.VITE_BACKEND_LOCAL_PORT || "4000";
+const localBackendUrl = normalise(`http://localhost:${localPort}`);
+
+const shouldForceRemote =
+  (import.meta.env.VITE_FORCE_BACKEND_URL || "")
+    .toString()
+    .toLowerCase() === "true";
+
+const resolveBackendUrl = () => {
+  let resolved = envBackendUrl || localBackendUrl || "/api";
+
+  if (typeof window === "undefined") {
+    return resolved;
+  }
+
+  const hostname = window.location.hostname;
+  const isLocalhost =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname.endsWith(".local");
+
+  if (!shouldForceRemote && isLocalhost) {
+    resolved = localBackendUrl || resolved;
+  }
+
+  return resolved || localBackendUrl || "/api";
+};
+
+const backendUrl = resolveBackendUrl();
+
+const shouldTrimApiPrefix = backendUrl.endsWith("/api");
+
+const normaliseRequestPath = (value) => {
+  if (!value || typeof value !== "string") return value;
+  if (/^https?:/i.test(value)) return value;
+
+  let path = value.trim();
+  if (!path.startsWith("/")) {
+    path = `/${path}`;
+  }
+
+  if (shouldTrimApiPrefix) {
+    if (path === "/api") {
+      return "/";
+    }
+    if (path.startsWith("/api/")) {
+      path = path.slice(4);
+      if (!path.startsWith("/")) {
+        path = `/${path}`;
+      }
+    }
+  }
+
+  return path;
+};
 
 export { backendUrl };
 const api = axios.create({
@@ -35,24 +89,31 @@ const getStoredToken = () => {
 
 api.interceptors.request.use(
   (config) => {
+    const nextConfig = { ...config };
+
     const token = getStoredToken();
     if (token) {
-      config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${token}`;
-      config.headers.token = token;
+      nextConfig.headers = nextConfig.headers || {};
+      nextConfig.headers.Authorization = `Bearer ${token}`;
+      nextConfig.headers.token = token;
     }
 
-    const isFormData = config.data instanceof FormData;
-    if (!isFormData && config.data !== undefined && !config.headers?.["Content-Type"]) {
-      config.headers = { ...(config.headers || {}), "Content-Type": "application/json" };
+    const isFormData = nextConfig.data instanceof FormData;
+    if (!isFormData && nextConfig.data !== undefined && !nextConfig.headers?.["Content-Type"]) {
+      nextConfig.headers = { ...(nextConfig.headers || {}), "Content-Type": "application/json" };
+    }
+
+    if (nextConfig.url) {
+      nextConfig.url = normaliseRequestPath(nextConfig.url);
     }
 
     if (import.meta.env.DEV) {
-      const url = `${config.baseURL || ""}${config.url || ""}`;
-      console.info(`[api] ${config.method?.toUpperCase()} ${url}`);
+      const url = `${nextConfig.baseURL || ""}${nextConfig.url || ""}`;
+      console.info(`[api] ${nextConfig.method?.toUpperCase()} ${url}`);
     }
 
     return config;
+    return nextConfig;
   },
   (error) => Promise.reject(error),
 );
