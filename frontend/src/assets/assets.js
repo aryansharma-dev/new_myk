@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import ai_imglogo from './ai_imglogo.png'
+//import ai_imglogo from './ai_imglogo.png'
 import ins_logo from './ins_logo.png'
 import facebook_logo from './facebook_logo.jpeg'
 import pinterest_logo from './pinterest_logo.png'
@@ -39,7 +39,7 @@ export const assets = {
     hero_img_768w,
     hero_img_1080w,
     hero_img_png,
-    ai_imglogo,
+    //ai_imglogo,
     ins_logo,
     facebook_logo,
     pinterest_logo,
