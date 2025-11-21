@@ -26,3 +26,12 @@ a.active hr{
         color: white;
     }
   }
+  .nospinner::-webkit-inner-spin-button,
+.nospinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.nospinner {
+  -moz-appearance: textfield;
+}

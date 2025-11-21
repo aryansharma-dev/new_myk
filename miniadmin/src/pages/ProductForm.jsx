@@ -305,7 +305,7 @@ const ProductForm = () => {
               type="number"
               value={form.price}
               onChange={onChange}
-              className="mt-1 block w-full border rounded-lg p-2"
+              className="mt-1 block w-full border rounded-lg p-2 nospinner"
             />
             {errors.price && <p className="text-sm text-red-600 mt-1">{errors.price}</p>}
           </div>
@@ -343,7 +343,7 @@ const ProductForm = () => {
               value={form.stock}
               onChange={onChange}
               type="number"
-              className="mt-1 block w-full border rounded-lg p-2"
+              className="mt-1 block w-full border rounded-lg p-2 nospinner"
             />
           </div>
 

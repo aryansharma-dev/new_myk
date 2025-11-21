@@ -96,11 +96,11 @@ export default function MiniStoreAdd() {
           <textarea name="bio" value={form.bio} onChange={onChange} className="border p-2 rounded" rows={3} />
         </label>
         <label className="grid gap-1">
-          <span className="text-sm">Avatar URL</span>
+          <span className="text-sm">Logo</span>
           <input name="avatarUrl" value={form.avatarUrl} onChange={onChange} className="border p-2 rounded" />
         </label>
         <label className="grid gap-1">
-          <span className="text-sm">Banner URL</span>
+          <span className="text-sm">Banner</span>
           <input name="bannerUrl" value={form.bannerUrl} onChange={onChange} className="border p-2 rounded" />
         </label>
         <label className="grid gap-1">
