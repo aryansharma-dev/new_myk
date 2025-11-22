@@ -241,7 +241,7 @@ const Product = () => {
                   <button
                     key={i}
                     onClick={() => setSize(s)}
-                    className={`border py-2 px-4 bg-gray-100 ${s === size ? "border-orange-500" : ""}`}
+                    className={`border py-2 px-4 rounded  ${s === size ? "border-orange-500 bg-orange-50" : "g-gray-100"}`}
                   >
                     {s}
                   </button>
