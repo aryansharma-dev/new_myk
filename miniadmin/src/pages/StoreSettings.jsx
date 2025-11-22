@@ -8,8 +8,11 @@ const StoreSettings = () => {
   const [formData, setFormData] = useState({
     displayName: '',
     bio: '',
-    avatarUrl: '',
-    bannerUrl: '',
+    avatar: null,
+    banner: null,
+    avatarPreview: '',
+    bannerPreview: '',
+
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -68,38 +71,46 @@ const StoreSettings = () => {
   }
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!formData.displayName.trim()) {
-      toast.error('Display name is required')
-      return
+      toast.error('Display name is required');
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
 
     try {
-      const token = localStorage.getItem('subadmin_token')
-      
-      const response = await api.put('/api/subadmin/mystore', formData, {
+      const token = localStorage.getItem('subadmin_token');
+
+      const data = new FormData();
+      data.append("displayName", formData.displayName);
+      data.append("bio", formData.bio);
+
+      if (formData.avatar) data.append("avatar", formData.avatar);
+      if (formData.banner) data.append("banner", formData.banner);
+
+      const response = await api.put('/api/subadmin/mystore', data, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        },
-      })
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        }
+      });
 
       if (response.data.success) {
-        toast.success('Store updated successfully!')
-        setStore(response.data.store)
+        toast.success("Store updated successfully!");
+        setStore(response.data.store);
       } else {
-        toast.error(response.data.message || 'Failed to update store')
+        toast.error(response.data.message || "Failed to update store");
       }
     } catch (error) {
-      console.error('Update store error:', error)
-      const message = error?.response?.data?.message || error.message
-      toast.error(message)
+      console.error("Update store error:", error);
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
+
 
   if (loading) {
     return (
@@ -160,36 +171,68 @@ const StoreSettings = () => {
               </div>
 
               <div>
-                <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                  Avatar Image URL
+                <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
+                  Avatar
                 </label>
                 <input
-                  type="url"
-                  id="avatarUrl"
-                  name="avatarUrl"
-                  value={formData.avatarUrl}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/avatar.jpg"
+                  type="file"
+                  accept="image/*"
+                  id="avatar"
+                  name="avatar"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFormData(prev => ({
+                        ...prev,
+                        avatar: file,
+                        avatarPreview: URL.createObjectURL(file)
+                      }));
+                    }
+                  }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 />
+
+                {formData.avatarPreview && (
+                  <img
+                    src={formData.avatarPreview}
+                    className="w-20 h-20 mt-2 rounded-full object-cover border"
+                  />
+                )}
+
                 <p className="text-xs text-gray-500 mt-1">
                   Profile image for your store (square image recommended)
                 </p>
               </div>
 
               <div>
-                <label htmlFor="bannerUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                  Banner Image URL
+                <label htmlFor="banner" className="block text-sm font-medium text-gray-700 mb-2">
+                  Banner
                 </label>
                 <input
-                  type="url"
-                  id="bannerUrl"
-                  name="bannerUrl"
-                  value={formData.bannerUrl}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/banner.jpg"
+                  type="file"
+                  accept="image/*"
+                  id="banner"
+                  name="banner"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFormData(prev => ({
+                        ...prev,
+                        banner: file,
+                        bannerPreview: URL.createObjectURL(file)
+                      }));
+                    }
+                  }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 />
+
+                {formData.bannerPreview && (
+                  <img
+                    src={formData.bannerPreview}
+                    className="w-full h-32 mt-2 object-cover rounded-lg"
+                  />
+                )}
+
                 <p className="text-xs text-gray-500 mt-1">
                   Cover image for your store (wide image recommended, 1200x400px)
                 </p>
@@ -255,19 +298,17 @@ const StoreSettings = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-sm border p-6 sticky top-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Preview</h3>
-            
-            {formData.bannerUrl && (
+
+            {formData.bannerPreview && (
               <div className="mb-4 rounded-lg overflow-hidden">
                 <img
-                  src={formData.bannerUrl}
+                  src={formData.bannerPreview}
                   alt="Banner Preview"
                   className="w-full h-32 object-cover"
-                  onError={(event) => {
-                    event.target.style.display = 'none'
-                  }}
                 />
               </div>
             )}
+
 
             <div className="flex items-center gap-3 mb-4">
               {formData.avatarUrl ? (
