@@ -31,32 +31,32 @@ const ProductForm = () => {
   // Fetch product for editing if productId is given
   useEffect(() => {
     if (!productId) return
-    ;(async () => {
-      try {
-        const token = localStorage.getItem('subadmin_token')
-        const res = await api.post(
-          '/api/product/single',
-          { productId },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
-        const product = res.data?.product || res.data?.data?.product
-        if (product) {
-          setForm({
-            name: product.name || '',
-            description: product.description || '',
-            price: product.price || '',
-            category: product.category || '',
-            subCategory: product.subCategory || '',
-            stock: product.stock || '',
-            bestseller: !!product.bestseller,
-            sizes: product.sizes || [],
-          })
-          setImageUrls(product.images || [])
+      ; (async () => {
+        try {
+          const token = localStorage.getItem('subadmin_token')
+          const res = await api.post(
+            '/api/product/single',
+            { productId },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+          const product = res.data?.product || res.data?.data?.product
+          if (product) {
+            setForm({
+              name: product.name || '',
+              description: product.description || '',
+              price: product.price || '',
+              category: product.category || '',
+              subCategory: product.subCategory || '',
+              stock: product.stock || '',
+              bestseller: !!product.bestseller,
+              sizes: product.sizes || [],
+            })
+            setImageUrls(product.images || [])
+          }
+        } catch (error) {
+          toast.error('Failed to load product for editing')
         }
-      } catch (error) {
-        toast.error('Failed to load product for editing')
-      }
-    })()
+      })()
   }, [productId])
 
   // Handle image file selection
@@ -142,8 +142,8 @@ const ProductForm = () => {
       })
 
       let res
-      const endpoint = productId 
-        ? `/api/subadmin/mystore/products/${productId}` 
+      const endpoint = productId
+        ? `/api/subadmin/mystore/products/${productId}`
         : '/api/subadmin/mystore/products/create'
       const method = productId ? 'put' : 'post'
 
@@ -175,6 +175,14 @@ const ProductForm = () => {
       setLoading(false)
     }
   }
+  const handleDescriptionChange = (e) => {
+    const words = e.target.value.trim().split(/\s+/);
+
+    if (words.length <= 150) {
+      onChange(e);
+    }
+  };
+
 
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-8 mt-6">
@@ -254,9 +262,15 @@ const ProductForm = () => {
           <textarea
             name="description"
             value={form.description}
-            onChange={onChange}
+            onChange={handleDescriptionChange}
             className="mt-1 block w-full border rounded-lg p-2 h-24"
           />
+          <p className="text-xs text-gray-500 mt-1">
+            {form.description.trim() === ""
+              ? 0
+              : form.description.trim().split(/\s+/).length}
+            /150 words
+          </p>
           {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description}</p>}
         </div>
 
@@ -322,11 +336,10 @@ const ProductForm = () => {
                 key={size}
                 type="button"
                 onClick={() => toggleSize(size)}
-                className={`px-3 py-1 border rounded-lg ${
-                  form.sizes.includes(size)
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`px-3 py-1 border rounded-lg ${form.sizes.includes(size)
+                  ? 'bg-black text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 {size}
               </button>
@@ -378,8 +391,8 @@ const ProductForm = () => {
                 ? 'Updating...'
                 : 'Creating...'
               : productId
-              ? 'Update Product'
-              : 'Add Product'}
+                ? 'Update Product'
+                : 'Add Product'}
           </button>
         </div>
       </form>
