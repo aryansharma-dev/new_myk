@@ -99,8 +99,20 @@ const StoreSettings = () => {
 
       if (response.data.success) {
         toast.success("Store updated successfully!");
-        setStore(response.data.store);
-      } else {
+
+        const updated = response.data.store;
+
+        setFormData(prev => ({
+          ...prev,
+          avatarUrl: updated.avatarUrl,
+          bannerUrl: updated.bannerUrl,
+          avatarPreview: "",
+          bannerPreview: ""
+        }));
+
+        setStore(updated);
+      }
+      else {
         toast.error(response.data.message || "Failed to update store");
       }
     } catch (error) {
@@ -226,12 +238,19 @@ const StoreSettings = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 />
 
-                {formData.bannerPreview && (
-                  <img
-                    src={formData.bannerPreview}
-                    className="w-full h-32 mt-2 object-cover rounded-lg"
-                  />
+                {(formData.bannerPreview || formData.bannerUrl) && (
+                  <div className="mb-4 rounded-lg overflow-hidden">
+                    <img
+                      src={
+                        formData.bannerPreview ||
+                        `${formData.bannerUrl}?t=${Date.now()}`
+                      }
+                      className="w-full h-32 object-cover"
+                      alt="Banner Preview"
+                    />
+                  </div>
                 )}
+
 
                 <p className="text-xs text-gray-500 mt-1">
                   Cover image for your store (wide image recommended, 1200x400px)
@@ -313,13 +332,16 @@ const StoreSettings = () => {
             <div className="flex items-center gap-3 mb-4">
               {formData.avatarUrl ? (
                 <img
-                  src={formData.avatarUrl}
+                  src={
+                    formData.avatarPreview ||
+                    (formData.avatarUrl && `${formData.avatarUrl}?t=${Date.now()}`) ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.displayName)}&background=random`
+                  }
                   alt="Avatar Preview"
                   className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
-                  onError={(event) => {
-                    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.displayName)}&background=random`
-                  }}
                 />
+
+
               ) : (
                 <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xl font-bold">
                   {formData.displayName.charAt(0).toUpperCase()}
