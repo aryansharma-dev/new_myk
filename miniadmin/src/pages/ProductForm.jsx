@@ -59,6 +59,19 @@ const ProductForm = () => {
       })()
   }, [productId])
 
+  const handleDeleteImage = (index) => {
+    const updated = [...imageUrls];
+    updated[index] = null;
+    setImageUrls(updated);
+  };
+
+  const handleEditImage = (index) => {
+  const input = document.getElementById(`upload-${index}`);
+  if (input) input.click();
+};
+
+
+
   // Handle image file selection
   const handleImageUpload = (e, index) => {
     const file = e.target.files[0]
@@ -202,13 +215,46 @@ const ProductForm = () => {
                 key={i}
                 className="border-2 border-dashed rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition"
               >
+                <input
+                      type="file"
+                      id={`upload-${i}`}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, i)}
+                    />
                 {imageUrls[i] ? (
-                  <img
-                    src={imageUrls[i]}
-                    alt="Uploaded"
-                    className="w-full h-28 object-cover rounded"
-                  />
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={imageUrls[i]}
+                      alt="Uploaded"
+                      className="w-full h-28 object-cover rounded"
+                    />
+
+                    {/* Buttons under image */}
+                    <div className="flex gap-4 mt-2">
+
+                      {/* Delete Button */}
+                      <button
+                      type="button"
+                        onClick={() => handleDeleteImage(i)}
+                        className="p-2 rounded-full border border-gray-300 hover:bg-red-100 transition"
+                      >
+                        <span className="text-xl">🗑️</span>
+                      </button>
+
+                      {/* Edit Button */}
+                      <button
+                      type="button"
+                        onClick={() => handleEditImage(i)}
+                        className="p-2 rounded-full border border-gray-300 hover:bg-blue-100 transition"
+                      >
+                        <span className="text-xl">✏️</span>
+                      </button>
+
+                    </div>
+                  </div>
                 ) : (
+
                   <>
                     <label
                       htmlFor={`upload-${i}`}
@@ -230,13 +276,7 @@ const ProductForm = () => {
                       </svg>
                       Upload
                     </label>
-                    <input
-                      type="file"
-                      id={`upload-${i}`}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, i)}
-                    />
+                    
                   </>
                 )}
               </div>
