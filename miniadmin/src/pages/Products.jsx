@@ -139,29 +139,16 @@ const Products = () => {
           >
             + Create New Product
           </button>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50"
-          >
-            Add From Catalog
-          </button>
+          
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap- mb-8">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="text-2xl font-bold text-gray-900">{myProducts.length}</div>
           <div className="text-sm text-gray-600 mt-1">Products in Store</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="text-2xl font-bold text-gray-900">{allProducts.length}</div>
-          <div className="text-sm text-gray-600 mt-1">Available Products</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="text-2xl font-bold text-gray-900">{availableProducts.length}</div>
-          <div className="text-sm text-gray-600 mt-1">Can Be Added</div>
-        </div>
-      </div>
 
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Store Products</h2>
@@ -229,68 +216,7 @@ const Products = () => {
         )}
       </div>
 
-      {showAddModal && (
-<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-4 border-b flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Add Products from Catalog</h3>
-                <p className="text-sm text-gray-500">Select products to add to your store</p>
-              </div>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
-              </button>
-            </div>
-
-            <div className="p-4 border-b flex gap-3">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search products..."
-                className="flex-1 px-4 py-2 border rounded"
-              />
-            </div>
-
-            <div className="flex-1 overflow-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredAvailableProducts.length === 0 ? (
-                <div className="col-span-full text-center text-gray-500">
-                  No products match your search
-                </div>
-              ) : (
-                filteredAvailableProducts.map((product) => (
-                  <div key={product._id} className="border rounded-lg overflow-hidden flex flex-col">
-                    <img
-                      src={product.images?.[0] || product.image?.[0] || PLACEHOLDER_IMAGE}
-                      alt={product.name}
-                      className="w-full h-40 object-cover"
-                      onError={(event) => {
-                        event.target.src = PLACEHOLDER_IMAGE
-                      }}
-                    />
-                    <div className="p-4 flex-1 flex flex-col">
-                      <h4 className="font-medium text-gray-900 line-clamp-2">{product.name}</h4>
-                      <p className="text-sm text-gray-500 mb-3">{product.category}</p>
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="font-semibold">
-                          {currency}
-                          {product.price}
-                        </span>
-                        <button
-                          onClick={() => addProductToStore(product._id)}
-                          className="px-3 py-1 bg-black text-white rounded text-sm"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   )
 }
