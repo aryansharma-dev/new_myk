@@ -43,7 +43,7 @@ const Contact = () => {
   return (
     <div>
 
-      <div className='text-center text-2xl pt-10 border-t'>
+      <div className='text-center text-2xl pt-10 border-t dark:invert'>
           <Title text1={'CONTACT'} text2={'US'} />
       </div>
 
@@ -63,14 +63,16 @@ const Contact = () => {
             decoding='async'
           />
         </picture>
-        <div className='flex flex-col justify-center items-start gap-6'>
+        <div className='flex flex-col justify-center items-start gap-6 dark:invert'>
           <p className='font-semibold text-xl text-gray-600'>Our Store</p>
           <p className=' text-gray-500'>TinyMillion HQ <br />House No 119, Patthar Ka Kuan Duddha, <br /> Deoband, Saharanpur, Uttar Pradesh-247554, India<br /> </p>
           <p className='font-semibold text-xl text-gray-600'>Branch office:</p>
           <p className=' text-gray-500'>Sector 62, Noida, Uttar Pradesh, India <br /> Email:hello.tinymillion@gmail.com <br /> Tel: +91 9258808835</p>
           <p className='font-semibold text-xl text-gray-600'>Careers at TinyMillion</p>
           <p className=' text-gray-500'>Learn more about our teams and job openings.</p>
-          <button className='border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500'>Explore Jobs</button>
+          <button className='border px-8 py-4 text-sm
+    transition-all duration-500 border-black text-black bg-white
+    dark:border-white dark:text-white dark:bg-black'>Explore Jobs</button>
         </div>
       </div>
 

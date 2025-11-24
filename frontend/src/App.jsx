@@ -24,6 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
+     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors duration-300">
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
 
@@ -56,6 +57,7 @@ const App = () => {
           }
         />
       </Routes>
+    </div>
     </div>
   );
 };

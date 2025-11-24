@@ -241,7 +241,7 @@ const Product = () => {
                   <button
                     key={i}
                     onClick={() => setSize(s)}
-                    className={`border py-2 px-4 rounded  ${s === size ? "border-orange-500 bg-orange-50" : "g-gray-100"}`}
+                    className={`border py-2 px-4 rounded ${s === size ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20" : "bg-gray-100 text-black dark:bg-gray-700 dark:text-white dark:border-gray-600"}`}
                   >
                     {s}
                   </button>
@@ -252,13 +252,15 @@ const Product = () => {
 
           <button
             onClick={handleAddToCart}
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
+            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700 border px-4 py-2 text-sm font-medium rounded-sm
+    bg-gray-200 text-black border-gray-300
+    dark:bg-gray-700 dark:text-white dark:border-gray-600"
           >
             ADD TO CART
           </button>
 
           <hr className="mt-8 sm:w-4/5" />
-          <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
+          <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1 dark:invert">
             <p>100% Original product.</p>
             <p>Cash on delivery is available on this product.</p>
             <p>Easy return and exchange policy within 7 days.</p>

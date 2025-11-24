@@ -26,7 +26,7 @@ const About = () => {
   return (
     <div>
 
-      <div className='text-2xl text-center pt-8 border-t'>
+      <div className='text-2xl text-center pt-8 border-t dark:invert'>
           <Title text1={'ABOUT'} text2={'US'} />
       </div>
 
@@ -46,7 +46,7 @@ const About = () => {
               decoding='async'
             />
           </picture>
-          <div className='flex flex-col justify-center gap-6 md:w-2/4 text-gray-600'>
+          <div className='flex flex-col justify-center gap-6 md:w-2/4 text-gray-600 dark:invert'>
               <p>TinyMillion is more than just a clothing brand — it&rsquo;s a movement that celebrates individuality, confidence, and modern living.
 Founded with a vision to redefine everyday fashion, TinyMillion curates handpicked collections that combine timeless style with today&rsquo;s trends.
 From classic staples to bold statements, our designs are made to empower — whether you&apos;re dressing for comfort, ambition, or creativity.
@@ -57,22 +57,22 @@ We aim to deliver a seamless shopping experience with designs that resonate with
           </div>
       </div>
 
-      <div className=' text-xl py-4'>
+      <div className=' text-xl py-4 dark:invert'>
           <Title text1={'WHY'} text2={'CHOOSE US'} />
       </div>
 
-      <div className='flex flex-col md:flex-row text-sm mb-20'>
+      <div className='flex flex-col md:flex-row text-sm mb-20 '>
           <div className='border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5'>
             <b>Quality You Can Trust </b>
-            <p className=' text-gray-600'>Every TinyMillion product is crafted with precision and care, meeting our uncompomising quality standards - because you deserve the best.</p>
+            <p className=' text-gray-600 dark:invert'>Every TinyMillion product is crafted with precision and care, meeting our uncompomising quality standards - because you deserve the best.</p>
           </div>
           <div className='border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5'>
             <b>Effortless Shopping Experience </b>
-            <p className=' text-gray-600'>With an intuitive interface and fast checkout, finding your perfect style has never been easier. Fashion, just a few clicks away.</p>
+            <p className=' text-gray-600 dark:invert'>With an intuitive interface and fast checkout, finding your perfect style has never been easier. Fashion, just a few clicks away.</p>
           </div>
           <div className='border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5'>
             <b>Dedicated Customer Support</b>
-            <p className=' text-gray-600'>From product queries to post-purchase help, our team is here for you — every step of the way. Your satisfaction is our promise.</p>
+            <p className=' text-gray-600 dark:invert'>From product queries to post-purchase help, our team is here for you — every step of the way. Your satisfaction is our promise.</p>
           </div>
       </div>
 

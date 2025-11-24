@@ -1,4 +1,4 @@
-import {useContext, useEffect, useMemo, useState} from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import ShopContext from '../context/ShopContextInstance';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
@@ -84,11 +84,11 @@ const Collection = () => {
           },
           listItems.length
             ? {
-                '@context': 'https://schema.org',
-                '@type': 'ItemList',
-                '@id': `${absoluteCanonical}#catalogue`,
-                itemListElement: listItems,
-              }
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              '@id': `${absoluteCanonical}#catalogue`,
+              itemListElement: listItems,
+            }
             : null,
         ].filter(Boolean);
       },
@@ -101,7 +101,7 @@ const Collection = () => {
     if (filteredProducts.length >= 12) return;
     loadNextProductsPage();
   }, [filteredProducts.length, products.length, productPagination?.hasMore, loadNextProductsPage]);
-  
+
   usePageMetadata({
     title: 'Shop All Collections',
     description:
@@ -129,9 +129,9 @@ const Collection = () => {
         </p>
 
         {/* Categories */}
-        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
-          <p className="mb-3 text-sm font-medium">CATEGORIES</p>
-          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+        <div className={`border border-gray-300 pl-5 py-3 mt-6 dark:invert ${showFilter ? '' : 'hidden'} sm:block`}>
+          <p className="mb-3 text-sm font-medium dark:invert">CATEGORIES</p>
+          <div className="flex flex-col gap-2 text-sm font-light text-gray-700 ">
             {['Men', 'Women', 'Kids', 'Jewellery'].map(c => (
               <label key={c} className="flex gap-2 items-center">
                 <input
@@ -148,8 +148,8 @@ const Collection = () => {
         </div>
 
         {/* Types */}
-        <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' : 'hidden'} sm:block`}>
-          <p className="mb-3 text-sm font-medium">TYPE</p>
+        <div className={`border border-gray-300 pl-5 py-3 my-5 dark:invert ${showFilter ? '' : 'hidden'} sm:block`}>
+          <p className="mb-3 text-sm font-medium dark:invert">TYPE</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             {['Topwear', 'Bottomwear', 'Winterwear', 'Girlish'].map(sc => (
               <label key={sc} className="flex gap-2 items-center">
@@ -168,12 +168,12 @@ const Collection = () => {
       </div>
 
       {/* RIGHT: Heading + Sort + Products */}
-      <div className="flex-1">
-        <div className="flex justify-between text-base sm:text-2xl mb-4">
+      <div className="flex-1 ">
+        <div className="flex justify-between text-base sm:text-2xl mb-4 dark:invert">
           <Title text1={'ALL'} text2={'COLLECTIONS'} />
           <select
             onChange={e => setSortType(e.target.value)}
-            className="border-2 border-gray-300 text-sm px-2"
+            className="border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white text-sm px-2 py-1 rounded outline-none"
           >
             <option value="relavent">Sort by: Relevant</option>
             <option value="low-high">Sort by: Low to High</option>
@@ -181,7 +181,7 @@ const Collection = () => {
           </select>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 ">
           {filteredProducts.map((item) => {
             if (!item || !item?._id) {
               return null;

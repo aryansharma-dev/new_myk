@@ -228,8 +228,8 @@ export default function MiniStore({ limit = 8 }) {
       return (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Store Not Found</h2>
-            <p className="text-gray-600 mb-4">The store you&rsquo;re looking for doesn&rsquo;t exist.</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:invert">Store Not Found</h2>
+            <p className="text-gray-600 mb-4 dark:invert">The store you&rsquo;re looking for doesn&rsquo;t exist.</p>
             <Link to="/store" className="text-blue-600 hover:underline">← Back to Mini Stores</Link>
           </div>
         </div>
@@ -348,9 +348,9 @@ export default function MiniStore({ limit = 8 }) {
 
   // MAIN VIEW: Mini Stores List
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8 dark:invert ">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 ">
           <Title text1={"CREATOR"} text2={"MINI STORES"} />
           <p className="w-full md:w-3/4 mx-auto text-xs sm:text-sm md:text-base text-gray-600 mt-4">
             Discover the newest styles and trends curated by TinyMillion - where fashion meets individuality.
@@ -370,16 +370,16 @@ export default function MiniStore({ limit = 8 }) {
                 key={s.slug}
                 to={`/${s.slug}`}
                 state={{ store: s }} 
-                className="group bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="group bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 dark:invert"
               >
-                <div className="w-full h-32 md:h-40 bg-gradient-to-br from-gray-100 to-gray-200">
+                <div className="w-full h-32 md:h-40 bg-gradient-to-br from-gray-100 to-gray-200 dark:invert">
                   {s.bannerUrl ? (
                     <img
                       src={s.bannerUrl}
                       alt={s.displayName}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 dark:invert "
                     />
                   ) : (
                     <img
@@ -391,20 +391,20 @@ export default function MiniStore({ limit = 8 }) {
                     />
                   )}
                 </div>
-                <div className="p-3 flex items-center gap-3">
+                <div className="p-3 flex items-center gap-3 dark:invert">
                   <img
                    src={s.avatarUrl || "https://tinymillion.com/images/default-avatar.png"}
                     alt={s.displayName}
                     loading="lazy"
                     decoding="async"
-                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 dark:invert"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <div className="font-medium truncate text-gray-900 group-hover:text-blue-600 transition-colors dark:invert">
                       {s.displayName}
                     </div>
                     {s.bio && (
-                      <div className="text-xs text-gray-500 line-clamp-1">{s.bio}</div>
+                      <div className="text-xs text-gray-500 line-clamp-1 dark:invert">{s.bio}</div>
                     )}
                   </div>
                 </div>

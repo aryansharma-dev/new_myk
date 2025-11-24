@@ -89,7 +89,7 @@ const Cart = () => {
   });
 
   return (
-    <div className='p-4 md:px-8'>
+    <div className='p-4 md:px-8 '>
       <Title title='Cart' />
       <div>
         {cartData.map((item, index) => {
@@ -99,7 +99,7 @@ const Cart = () => {
           return (
             <div
               key={`${item._id}-${item.size}-${index}`}
-              className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
+              className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4 "
             >
               <div className='flex items-start gap-6'>
               {imgSrc ? (
@@ -116,8 +116,8 @@ const Cart = () => {
                   </div>
                 )}
                 <div>
-                 <p className='text-xs sm:text-lg font-medium'>{productData?.name || (isLoadingProduct ? 'Loading product…' : 'Product')}</p>
-                  <div className='flex items-center gap-5 mt-2'>
+                 <p className='text-xs sm:text-lg font-medium dark:invert'>{productData?.name || (isLoadingProduct ? 'Loading product…' : 'Product')}</p>
+                  <div className='flex items-center gap-5 mt-2 dark:invert'>
                     <p>{currency}{productData?.price ?? (isLoadingProduct ? '--' : 0)}</p>
                     <p className='px-2 sm:px-3 sm:py-1 border bg-slate-50'>{item.size}</p>
                   </div>
@@ -129,7 +129,7 @@ const Cart = () => {
                   if (e.target.value === '' || e.target.value === '0') return;
                   updateQuantity(item._id, item.size, Number(e.target.value));
                 }}
-                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
+                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 dark:bg-gray-900 text-black dark:text-white'
                 type='number'
                 min={1}
                 defaultValue={item.quantity}
@@ -147,21 +147,21 @@ const Cart = () => {
           );
         })}
         {!cartData.length && (
-          <div className='py-10 text-center text-gray-500'>Your cart is empty.</div>
+          <div className='py-10 text-center text-gray-500 dark:invert'>Your cart is empty.</div>
         )}
         {awaitingProducts && cartData.length > 0 && (
-          <div className='py-4 text-sm text-gray-500'>Refreshing product details…</div>
+          <div className='py-4 text-sm text-gray-500 dark:invert'>Refreshing product details…</div>
         )}
       </div>
 
-      <div className='flex justify-end my-20'>
+      <div className='flex justify-end my-20 '>
         <div className='w-full sm:w-[450px]'>
           <CartTotal />
-          <div className='w-full text-end'>
+          <div className='w-full text-end dark:invert'>
             <button
               onClick={() => token ? navigate('/place-order') : navigate('/login', { state: { from: '/place-order' } })}
               disabled={!hasItems}
-              className={`bg-black text-white text-sm my-8 px-8 py-3 ${!hasItems ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`bg-black text-white text-sm my-8 px-8 py-3 dark:bg-gray-900 text-black dark:text-white ${!hasItems ? 'opacity-60 cursor-not-allowed' : ''}`}
               title={!hasItems ? 'Add items to your cart first' : 'Proceed to Checkout'}
             >
               PROCEED TO CHECKOUT

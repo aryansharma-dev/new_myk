@@ -42,7 +42,7 @@ const Checkout = () => {
 
   return (
       <div className="mx-auto max-w-xl space-y-6 py-8">
-      <h2 className="text-2xl font-semibold">Checkout</h2>
+      <h2 className="text-2xl font-semibold dark">Checkout</h2>
       <p className="text-gray-600">
         Review your order summary below. When you&rsquo;re ready, continue to the secure checkout page to choose your payment method and confirm delivery details.
       </p>

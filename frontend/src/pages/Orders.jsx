@@ -140,7 +140,7 @@ const Orders = () => {
   
   return (
     <div className='border-t pt-16'>
-      <div className='text-2xl'>
+      <div className='text-2xl dark:invert'>
         <Title text1={'MY'} text2={'ORDERS'} />
       </div>
 
@@ -153,19 +153,19 @@ const Orders = () => {
               return (
                 <div
                   key={`${item._id || index}-${index}`}
-                  className='py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4'
+                  className='py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4 '
                 >
-                  <div className='flex items-start gap-6 text-sm'>
+                  <div className='flex items-start gap-6 text-sm dark:invert '>
                     {imageSrc ? (
                       <img
-                        className='w-16 sm:w-20 object-cover'
+                        className='w-16 sm:w-20 object-cover dark:invert'
                         src={imageSrc}
                         alt={item.name || 'Ordered product'}
                         loading='lazy'
                         decoding='async'
                       />
                     ) : (
-                      <div className='w-16 sm:w-20 bg-gray-100 flex items-center justify-center text-xs'>
+                      <div className='w-16 sm:w-20 bg-gray-100 flex items-center justify-center text-xs '>
                         No image
                       </div>
                     )}
@@ -180,12 +180,12 @@ const Orders = () => {
                       <p className='mt-1'>Payment: <span className=' text-gray-400'>{item.paymentMethod}</span></p>
                     </div>
                   </div>
-                  <div className='md:w-1/2 flex justify-between'>
+                  <div className='md:w-1/2 flex justify-between '>
                     <div className='flex items-center gap-2'>
-                      <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
-                      <p className='text-sm md:text-base'>{item.status}</p>
+                      <p className='min-w-2 h-2 rounded-full bg-green-500 '></p>
+                      <p className='text-sm md:text-base dark:invert'>{item.status}</p>
                     </div>
-                    <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+                    <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm bg-white text-black border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600'>Track Order</button>
                   </div>
                 </div>
                );
