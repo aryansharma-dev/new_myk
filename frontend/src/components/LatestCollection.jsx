@@ -24,7 +24,7 @@ const LatestCollection = () => {
   
   return (
     <div className='my-10'>
-       <div className='text-center py-8 text-3xl'>
+       <div className='text-center py-8 text-3xl dark:invert'>
          <Title text1={'LATEST'} text2={'COLLECTIONS'} />
          <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
           Discover the newest styles and trends curated by TinyMillion - where fashion meets individuality.
@@ -39,6 +39,11 @@ const LatestCollection = () => {
             image={getProductImageArray(item)}
             name={item.name}
             price={item.price}
+             // explicit light/dark styling (keeps image intact)
+                className="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-200 dark:border-gray-600 p-3 rounded"
+
+                // still keep image non-inverting just in case
+                imgClassName="object-cover w-full h-auto"
           />
         ))}
       </div>

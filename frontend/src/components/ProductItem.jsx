@@ -1,11 +1,11 @@
 // frontend/src/components/ProductItem.jsx
 import PropTypes from "prop-types";
-import {useContext, useMemo} from "react";
+import { useContext, useMemo } from "react";
 import ShopContext from '../context/ShopContextInstance';
 import { Link } from "react-router-dom";
 import { getProductImageArray } from "../utils/productImages";
 
-const ProductItem = ({ id, image, name, price }) => {
+const ProductItem = ({ id, image, name, price, className ="", imgClassName = "" }) => {
   const { currency } = useContext(ShopContext);
 
   const normalizedImages = useMemo(() => {
@@ -18,12 +18,15 @@ const ProductItem = ({ id, image, name, price }) => {
     return [];
   }, [image]);
 
-  const imgSrc = useMemo(() => (normalizedImages.length > 0 ? normalizedImages[0] : ""), [normalizedImages]);
+  const imgSrc = useMemo(
+    () => (normalizedImages.length > 0 ? normalizedImages[0] : ""),
+    [normalizedImages]
+  );
 
   return (
     <Link
       onClick={() => window.scrollTo(0, 0)}
-      className="text-gray-700 cursor-pointer"
+      className={`text-gray-700 cursor-pointer ${className}`}
       to={`/product/${id}`}
     >
       <div className="overflow-hidden">
@@ -35,7 +38,7 @@ const ProductItem = ({ id, image, name, price }) => {
             decoding="async"
             width={400}
             height={400}
-            className="hover:scale-110 transition ease-in-out w-full h-auto object-cover"
+            className={`hover:scale-110 transition ease-in-out w-full h-auto object-cover ${imgClassName}`}
           />
         ) : (
           // agar image missing ho to placeholder div
@@ -44,14 +47,15 @@ const ProductItem = ({ id, image, name, price }) => {
           </div>
         )}
       </div>
+
       <p className="pt-3 pb-1 text-sm">{name || "Product"}</p>
       <p className="text-sm font-medium">
-        {currency}
-         {price ?? ""}
+        {currency}{price ?? ""}
       </p>
     </Link>
   );
 };
+
 
 ProductItem.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,

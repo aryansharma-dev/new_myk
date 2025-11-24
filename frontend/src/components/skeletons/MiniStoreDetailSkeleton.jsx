@@ -7,10 +7,10 @@ const MiniStoreDetailSkeleton = ({ showProducts = true }) => (
     role="status"
     aria-live="polite"
     aria-label="Loading mini store details"
-    className="min-h-screen bg-gray-50"
+    className="min-h-screen bg-gray-50 "
   >
     <p className="sr-only">Loading mini store details…</p>
-    <div className="max-w-7xl mx-auto px-4 py-4 space-y-6 animate-pulse">
+    <div className="max-w-7xl mx-auto px-4 py-4 space-y-6 animate-pulse ">
       <div className="flex items-center gap-3" aria-hidden="true">
         <div className={`h-5 w-5 rounded-full ${shimmer}`} />
         <div className={`h-4 w-32 rounded-md ${shimmer}`} />

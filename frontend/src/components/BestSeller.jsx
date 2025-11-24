@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react'
+import { useContext, useEffect, useState } from 'react'
 import ShopContext from '../context/ShopContextInstance';
 import Title from './Title';
 import ProductItem from './ProductItem';
@@ -6,44 +6,50 @@ import { getPrimaryProductImage } from '../utils/productImages';
 
 const BestSeller = () => {
 
-    const {products, productPagination, loadNextProductsPage} = useContext(ShopContext);
-    const [bestSeller,setBestSeller] = useState([]);
+  const { products, productPagination, loadNextProductsPage } = useContext(ShopContext);
+  const [bestSeller, setBestSeller] = useState([]);
 
-    useEffect(()=>{
-        const bestProduct = products.filter((item)=>(item.bestseller));
-        setBestSeller(bestProduct.slice(0,5))
-    },[products])
+  useEffect(() => {
+    const bestProduct = products.filter((item) => (item.bestseller));
+    setBestSeller(bestProduct.slice(0, 5))
+  }, [products])
 
-    useEffect(() => {
-        if (!productPagination?.hasMore) return;
-        if (bestSeller.length >= 5) return;
-        loadNextProductsPage();
-    }, [bestSeller.length, productPagination?.hasMore, loadNextProductsPage]);
-    
+  useEffect(() => {
+    if (!productPagination?.hasMore) return;
+    if (bestSeller.length >= 5) return;
+    loadNextProductsPage();
+  }, [bestSeller.length, productPagination?.hasMore, loadNextProductsPage]);
+
   return (
     <div className='my-10'>
-      <div className='text-center text-3xl py-8'>
-        <Title text1={'BEST'} text2={'SELLERS'}/>
-        <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-        Discover the newest styles and trends curated by TinyMillion - where fashion meets individulity.
+      <div className='text-center text-3xl py-8 dark:invert'>
+        <Title text1={'BEST'} text2={'SELLERS'} />
+        <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600 '>
+          Discover the newest styles and trends curated by TinyMillion - where fashion meets individulity.
         </p>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6  '>
         {
-           bestSeller.map((item, index) => {
-           const firstImg = getPrimaryProductImage(item);
-           return (
-           <ProductItem
-           key={index}
-           id={item._id}
-           name={item.name}
-           image={firstImg}
-           price={item.price}
-           />
-         );
-      })
+          bestSeller.map((item, index) => {
+            const firstImg = getPrimaryProductImage(item);
+            return (
+              <ProductItem
+                key={index}
+                id={item._id}
+                name={item.name}
+                price={item.price}
+                image={firstImg}
 
+                // explicit light/dark styling (keeps image intact)
+                className="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-200 dark:border-gray-600 p-3 rounded"
+
+                // still keep image non-inverting just in case
+                imgClassName="object-cover w-full h-auto"
+              />
+
+            );
+          })
         }
       </div>
     </div>

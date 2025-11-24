@@ -16,7 +16,7 @@ const CartTotal = () => {
 
   return (
     <div className="w-full">
-      <div className="text-2xl">
+      <div className="text-2xl dark:invert">
         <Title text1={"CART"} text2={"TOTALS"} />
       </div>
 

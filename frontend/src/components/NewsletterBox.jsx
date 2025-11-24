@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import api from '../lib/api';
 
 const NewsletterBox = () => {
@@ -25,16 +25,16 @@ const NewsletterBox = () => {
 
   return (
     <div className="text-center">
-      <p className="text-2xl font-medium text-gray-800">Subscribe now & get 20% off</p>
-      <p className="text text-gray-400 mt-3">
+      <p className="text-2xl font-medium text-gray-800 dark:invert">Subscribe now & get 20% off</p>
+      <p className="text text-gray-400 mt-3 dark:invert">
         Join the TinyMillion family and stay updated with exclusive offers, new arrivals, and style inspiration — straight to your inbox.
       </p>
       <form
-           onSubmit={onSubmitHandler}
+        onSubmit={onSubmitHandler}
         className="w-full sm:w-1/2 flex items-center gap-3 mx-auto my-6 border pl-3"
       >
         <input
-          className="w-full sm:flex-1 outline-none"
+          className="w-full sm:flex-1 outline-none bg-white text-black dark:bg-black dark:text-white placeholder-gray-400 dark:placeholder-gray-50 border border-gray-300 dark:border-gray-60 rounded-md p-2"
           type='email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -43,7 +43,7 @@ const NewsletterBox = () => {
         />
         <button
           type='submit'
-          className="bg-black text-white text-xs px-10 py-4"
+          className="bg-black text-white text-xs px-10 py-4 dark:invert"
         >
           SUBSCRIBE
         </button>
